@@ -1,0 +1,4 @@
+---
+serviceAPort: 8080
+serviceBPort: 8081
+serviceBUrl: http://localhost:8081
