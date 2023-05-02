@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gofiber/fiber"
+	"github.com/gofiber/adaptor/v2"
+	"github.com/gofiber/fiber/v2"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gopkg.in/yaml.v3"
 )
 
@@ -19,33 +21,35 @@ func main() {
 
 	s := fiber.New()
 	s.Get("/api/time", h.timeHandler)
+
+	s.Get("/metrics", adaptor.HTTPHandler(promhttp.Handler()))
+
 	log.Fatalln(
-		s.Listen(c.ServiceAPort),
+		s.Listen(fmt.Sprintf(":%d", c.ServiceAPort)),
 	)
 }
 
-type Handler struct{
+type Handler struct {
 	config Config
 }
 
-func (h *Handler) timeHandler(c *fiber.Ctx){
+func (h *Handler) timeHandler(c *fiber.Ctx) error {
 	ep := fmt.Sprintf("%s/api/time", h.config.ServiceBUrl)
 	r, err := http.Get(ep)
 	if err != nil {
-		c.JSON(fmt.Sprintf("Error: %s", err.Error()))
-		return
+		return err
 	}
-	
-	msg := struct{DateTime string}{}
+
+	msg := struct{ DateTime string }{}
 
 	err = json.NewDecoder(r.Body).Decode(&msg)
 	if err != nil {
-		c.JSON(fmt.Sprintf("Error: %s", err.Error()))
-		return
+		return err
 	}
 	defer r.Body.Close()
 
 	c.JSON(msg)
+	return nil
 }
 
 type Config struct {
