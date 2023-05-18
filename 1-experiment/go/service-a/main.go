@@ -15,7 +15,7 @@ import (
 
 func main() {
 	var c Config
-	c.load("../../config.yaml")
+	c.load("./config.yaml")
 
 	h := Handler{config: c}
 
