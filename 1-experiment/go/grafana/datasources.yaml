@@ -1,0 +1,9 @@
+---
+apiVersion: 1
+datasources:
+- name: service-a
+  type: prometheus
+  url: http://service-a-prometheus:5050
+- name: service-b
+  type: prometheus
+  url: http://service-b-prometheus:5051

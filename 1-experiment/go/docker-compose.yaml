@@ -14,13 +14,23 @@ services:
   service-a-prometheus:
     image: prom/prometheus:v2.40.4
     ports:
-      - "9090:9090"
+      - "5050:9090"
     volumes:
       - "./prometheus/service-a-prometheus.yaml:/etc/prometheus/prometheus.yaml"
 
   service-b-prometheus:
     image: prom/prometheus:v2.40.4
     ports:
-      - "9091:9091"
+      - "5051:9090"
     volumes:
       - "./prometheus/service-b-prometheus.yaml:/etc/prometheus/prometheus.yaml"
+
+  grafana:
+    image: grafana/grafana:9.3.0
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=devops123
+    volumes:
+      - ./grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
